@@ -1,12 +1,16 @@
 package com.example.registration
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.core.widget.doOnTextChanged
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -17,6 +21,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        /* hide keyboard */
+        val mainLayout = findViewById<LinearLayout>(R.id.mainLinearLayout)
+        mainLayout.setOnClickListener {
+            hideKeyboard(view = it)
+            return@setOnClickListener
+        }
 
         /* user_name */
         val userName = findViewById<TextInputEditText>(R.id.textInputEditTextUserName)
@@ -109,16 +120,16 @@ class MainActivity : AppCompatActivity() {
             /* checking before send */
             when {
                 userName.text.isNullOrEmpty() -> {
-                    return@setOnClickListener
+                    lUserName.error = "Username is required"
                 }
                 gender.text.isNullOrEmpty() -> {
-                    return@setOnClickListener
+                    lGender.error = "Gender is required"
                 }
                 documentID.text.isNullOrEmpty() -> {
-                    return@setOnClickListener
+                    lDocumentID.error = "Document ID is required"
                 }
                 dateOfBirth.text.isNullOrEmpty() -> {
-                    return@setOnClickListener
+                    lDateOfBirth.error = "Date of Birth is required"
                 }
                 else -> {
                     val secondActivity = Intent(this, SecondActivity::class.java).apply {
@@ -126,11 +137,15 @@ class MainActivity : AppCompatActivity() {
                         putExtra("gender", gender.text.toString())
                         putExtra("documentID", documentID.text.toString())
                         putExtra("dateOfBirth", dateOfBirth.text.toString())
-
                     }
                     startActivity(secondActivity)
                 }
             }
         }
+    }
+
+    private fun hideKeyboard(view: View){
+        val vHide = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        vHide.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
